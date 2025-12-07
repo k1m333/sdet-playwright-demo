@@ -25,3 +25,7 @@ This repo is a small but realistic example of how I structure UI test automation
 npm install
 npx playwright install
 npm test
+
+## Debug Mode
+
+npx playwright test tests/buttons.spec.ts --debug
