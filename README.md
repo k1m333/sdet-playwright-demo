@@ -25,7 +25,14 @@ This repo is a small but realistic example of how I structure UI test automation
 npm install
 npx playwright install
 npm test
+```
 
 ## Debug Mode
-
+```bash
 npx playwright test tests/buttons.spec.ts --debug
+```
+
+## Design Decisions
+- Uses POM to separate test logic from UI locators
+- External site (DemoQA) is referenced via baseURL to simulate real-world testing
+- Locators use stable IDs when available; text locators when they are not available

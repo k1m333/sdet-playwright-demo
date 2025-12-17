@@ -5,9 +5,9 @@ export class ButtonsPage {
   readonly page: Page;
 
   // Buttons
-  readonly doubleButton: Locator;
-  readonly rightButton: Locator;
-  readonly dynamicButton: Locator;
+  readonly doubleClickButton: Locator;
+  readonly rightClickButton: Locator;
+  readonly dynamicClickButton: Locator;
 
   // Messages
   readonly doubleClickMessage: Locator;
@@ -18,9 +18,9 @@ export class ButtonsPage {
     this.page = page;
 
     // Buttons
-    this.doubleButton = page.getByRole('button', { name: 'Double Click Me' });
-    this.rightButton = page.getByRole('button', { name: 'Right Click Me' });
-    this.dynamicButton = page.getByRole('button', { name: 'Click Me', exact: true });
+    this.doubleClickButton = page.getByRole('button', { name: 'Double Click Me' });
+    this.rightClickButton = page.getByRole('button', { name: 'Right Click Me' });
+    this.dynamicClickButton = page.getByRole('button', { name: 'Click Me', exact: true });
 
     // Messages
     this.doubleClickMessage = page.locator('#doubleClickMessage');
@@ -32,15 +32,15 @@ export class ButtonsPage {
     await this.page.goto(`${BASE_URL}/buttons`);
   }
 
-  async doubleClickButton() {
-    await this.doubleButton.dblclick();
+  async doubleClick() {
+    await this.doubleClickButton.dblclick();
   }
 
-  async rightClickButton() {
-    await this.rightButton.click({ button: 'right' });
+  async rightClick() {
+    await this.rightClickButton.click({ button: 'right' });
   }
 
-  async dynamicClickButton() {
-    await this.dynamicButton.click();
+  async dynamicClick() {
+    await this.dynamicClickButton.click();
   }
 }

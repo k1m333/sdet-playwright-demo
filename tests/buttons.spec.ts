@@ -10,7 +10,7 @@ test.describe('DemoQA Buttons Suite', () => {
   test('Double Click Button shows correct message', async ({ page }) => {
     const buttonsPage = new ButtonsPage(page);
 
-    await buttonsPage.doubleClickButton();
+    await buttonsPage.doubleClick();
 
     await expect(buttonsPage.doubleClickMessage).toBeVisible();
     await expect(buttonsPage.doubleClickMessage).toHaveText('You have done a double click');
@@ -19,7 +19,7 @@ test.describe('DemoQA Buttons Suite', () => {
   test('Right Click Button shows correct message', async ({ page }) => {
     const buttonsPage = new ButtonsPage(page);
 
-    await buttonsPage.rightClickButton();
+    await buttonsPage.rightClick();
 
     await expect(buttonsPage.rightClickMessage).toBeVisible();
     await expect(buttonsPage.rightClickMessage).toHaveText('You have done a right click');
@@ -28,7 +28,7 @@ test.describe('DemoQA Buttons Suite', () => {
   test('Dynamic Click Button shows correct message', async ({ page }) => {
     const buttonsPage = new ButtonsPage(page);
 
-    await buttonsPage.dynamicClickButton();
+    await buttonsPage.dynamicClick();
 
     await expect(buttonsPage.dynamicClickMessage).toBeVisible();
     await expect(buttonsPage.dynamicClickMessage).toHaveText('You have done a dynamic click');
