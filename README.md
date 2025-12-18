@@ -48,3 +48,9 @@ Artifacts are saved locally and can be viewed using:
 ```bash
 npx playwright show-trace trace.zip
 ```
+
+Force a retry to see the screenshots and videos of trace
+of failed test with:
+```bash
+npx playwright test --trace on
+```

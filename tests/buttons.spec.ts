@@ -14,6 +14,9 @@ test.describe('DemoQA Buttons Suite', () => {
 
     await expect(buttonsPage.doubleClickMessage).toBeVisible();
     await expect(buttonsPage.doubleClickMessage).toHaveText('You have done a double click');
+    // Temporarily break test to show screenshots and videos.
+    // await expect(page.locator('h1')).toHaveText('This Will Fail');
+
   });
 
   test('Right Click Button shows correct message', async ({ page }) => {
