@@ -36,3 +36,15 @@ npx playwright test tests/buttons.spec.ts --debug
 - Uses POM to separate test logic from UI locators
 - External site (DemoQA) is referenced via baseURL to simulate real-world testing
 - Locators use stable IDs when available; text locators when they are not available
+
+## Debugging & Test Artifacts
+
+This project is configured to automatically capture:
+- Screenshots on test failure
+- Video recordings on test failure
+- Playwright traces on the first retry
+
+Artifacts are saved locally and can be viewed using:
+```bash
+npx playwright show-trace trace.zip
+```
