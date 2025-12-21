@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
-  retries: 1,
+  retries: process.env.CI ? 2 : 0,
   reporter: [
     ['list'],
     ['html', { open: 'never' }]
@@ -20,5 +20,5 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] }
     }
-  ]
+  ],
 });
