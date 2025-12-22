@@ -54,3 +54,7 @@ of failed test with:
 ```bash
 npx playwright test --trace on
 ```
+
+Sa12/21/25
+CI Artifacts: GitHub Actions uploads the Playwright HTML report as an artifact on every run.
+Local reports: npx playwright show-report
