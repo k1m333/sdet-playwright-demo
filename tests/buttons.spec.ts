@@ -1,7 +1,7 @@
 import { test, expect } from '../fixtures/test-fixtures';
 import { ButtonsPage } from '../pages/ButtonsPage';
 
-test.describe('DemoQA Buttons Suite', () => {
+test.describe('Buttons page @smoke', () => {
   test.beforeEach(async ({ page }) => {
     const buttonsPage = new ButtonsPage(page);
     await buttonsPage.goto();
