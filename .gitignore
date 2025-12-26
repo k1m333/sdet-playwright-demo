@@ -1,0 +1,10 @@
+# Playwright artifacts
+playwright-report/
+test-results/
+blob-report/
+*.zip
+
+# Node
+node_modules/
+.env
+.DS_Store
