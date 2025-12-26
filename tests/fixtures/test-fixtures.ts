@@ -1,5 +1,5 @@
 import { test as base, expect } from '@playwright/test';
-import { TextBoxPage } from '../pages/TextBoxPage';
+import { TextBoxPage } from '../../pages/TextBoxPage';
 
 type Fixtures = {
   textBoxPage: TextBoxPage;

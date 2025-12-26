@@ -36,8 +36,8 @@ export class TextBoxPage {
     this.outputPanel = page.locator('#output');
     this.outputName = this.outputPanel.locator('#name');
     this.outputEmail = this.outputPanel.locator('#email');
-this.outputCurrentAddress = this.outputPanel.getByText(/^Current Address/);
-this.outputPermanentAddress = this.outputPanel.getByText(/^Permanent Address/);
+    this.outputCurrentAddress = this.outputPanel.locator('#currentAddress');
+    this.outputPermanentAddress = this.outputPanel.locator('#permanentAddress');
   }
 
   async navigate() {
