@@ -55,17 +55,38 @@ of failed test with:
 npx playwright test --trace on
 ```
 
-## Sa12/21/25
 CI Artifacts: GitHub Actions uploads the Playwright HTML report as an artifact on every run.
 Local reports: 
 ```bash
 npx playwright show-report
 ```
 
+Useful command for debugging.
+```bash
 npx playwright test tests/buttons.spec.ts --debug
+```
 
-## F12/26/25
+## Recent Features
 Textbox coverage:
 - Happy path (POM & fixtures)
 - Negative path (invalid/missing email blocks submission)
+
+## Development Log (Personal)
+
+<details>
+<summary>Dec 26, 2025</summary>
+
+- Added email validation tests
+- Clarified optional vs invalid email behavior
+- Stabilized submit interactions
+- All 6 tests passing
+</details>
+
+<details>
+<summary>Dec 21, 2025</summary>
+
+- Added Playwright tracing & debug commands
+- Documented CI artifacts
+</details>
+
 
