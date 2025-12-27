@@ -29,3 +29,8 @@ npm test
 ## Debug Mode
 
 npx playwright test tests/buttons.spec.ts --debug
+
+## F12-16-25
+Textbox coverage:
+- Happy path (POM & fixtures)
+- Negative path (invalid/missing email blocks submission)
