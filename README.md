@@ -1,3 +1,5 @@
+![Playwright CI](https://github.com/k1m333/sdet-playwright-demo/actions/workflows/playwright.yml/badge.svg)
+
 # Playwright SDET Demo – DemoQA Buttons
 
 This repo is a small but realistic example of how I structure UI test automation as an SDET using **Playwright + TypeScript**.
