@@ -67,11 +67,26 @@ npx playwright test tests/buttons.spec.ts --debug
 ```
 
 ## Recent Features
+Github Actions CI:
+- Fixed the YAML file by using Block YAML only
+  instead of mixed inline/JSON YAML so the job runs.
+- All tests should pass with Continuous Integration
+  whenever a pull request is merged to or code is pushed to main.
+
 Textbox coverage:
 - Happy path (POM & fixtures)
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+
+<details>
+<summary>Dec 27, 2025</summary>
+
+- Fixed playwright.yml to use block YAML
+  instead of inline/JSON YAML because it's less
+  error-prone and more readable.
+- GitHub Actions CI runs the test job and succeeds.
+</details>
 
 <details>
 <summary>Dec 26, 2025</summary>
