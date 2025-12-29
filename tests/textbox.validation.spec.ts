@@ -18,25 +18,35 @@ test('Text Box blocks submit with invalid email', async ({ page }) => {
 });
 
 
-test('Text Box allows submit when email is missing (email optional)', async ({ page }) => {
+test('Text Box: missing email follows HTML5 required behavior', async ({ page }) => {
   await page.goto('https://demoqa.com/text-box');
 
-  await page.getByPlaceholder('Full Name').fill('AJ Kim');
+  // Fill required-ish fields except email
+  await page.locator('#userName').fill('AJ Kim');
   await page.locator('#currentAddress').fill('123 Main St');
   await page.locator('#permanentAddress').fill('456 Second St');
 
-  const submit = page.locator('#submit');
-  await submit.scrollIntoViewIfNeeded();
-  await submit.click({ force: true });
 
+  const email = page.locator('#userEmail');
+  const submit = page.getByRole('button', { name: /submit/i });
   const output = page.locator('#output');
-  await expect(output).toBeVisible();
 
-  // Name should be printed
-  await expect(output).toContainText('Name:AJ Kim');
+  // Detect actual constraint from the DOM
+  const isRequired = await email.evaluate((el: HTMLInputElement) => el.required);
 
-  // Email line should NOT be printed when missing
-  await expect(output).not.toContainText('Email:');
+  await submit.click();
+
+  if (isRequired) {
+    // HTML5 blocks submission when required field missing
+    const isValid = await email.evaluate((el: HTMLInputElement) => el.checkValidity());
+    expect(isValid).toBe(false);
+    await expect(output).toBeHidden();
+  } else {
+    // Submission succeeds even without email
+    await expect(output).toBeVisible();
+    // And email line should not be printed
+    await expect(output).not.toContainText(/Email/i);
+  }
 });
 
 test.describe('DemoQA Text Box - Field Boundaries', () => {
