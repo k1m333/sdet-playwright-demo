@@ -69,21 +69,33 @@ npx playwright test tests/buttons.spec.ts --debug
 ```
 
 ## Recent Features
-Github Actions CI:
+
+### Boundary & Accessibility E2E Coverage
+- Validates max lengths for text inputs
+- Handles edge whitespace inputs
+- Uses roles + name selectors for accessibility and stability
+
+### Github Actions CI:
 - Fixed the YAML file by using Block YAML only
   instead of mixed inline/JSON YAML so the job runs.
 - All tests should pass with Continuous Integration
   whenever a pull request is merged to or code is pushed to main.
 
-Textbox coverage:
+### Textbox coverage:
 - Happy path (POM & fixtures)
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
+<summary>Sunday, Dec 28, 2025</summary>
+- Added textbox boundaries test file to validate
+  max lengths for text inputs and handles edge case
+  whitespace inputs. It uses role and name selectors for
+  stability and accessiblity.
+</details>
 
 <details>
-<summary>Dec 27, 2025</summary>
-
+<summary>Saturday, Dec 27, 2025</summary>
 - Fixed playwright.yml to use block YAML
   instead of inline/JSON YAML because it's less
   error-prone and more readable.
@@ -91,8 +103,7 @@ Textbox coverage:
 </details>
 
 <details>
-<summary>Dec 26, 2025</summary>
-
+<summary>Friday, Dec 26, 2025</summary>
 - Added email validation tests
 - Clarified optional vs invalid email behavior
 - Stabilized submit interactions
