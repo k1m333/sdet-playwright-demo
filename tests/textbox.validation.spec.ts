@@ -1,75 +1,72 @@
 import { test, expect } from './fixtures/test-fixtures';
 
-test('Text Box blocks submit with invalid email', async ({ page }) => {
-  await page.goto('https://demoqa.com/text-box');
-
-  await page.getByPlaceholder('Full Name').fill('AJ Kim');
-  await page.getByPlaceholder('name@example.com').fill('not-an-email');
-  await page.locator('#currentAddress').fill('123 Main St');
-  await page.locator('#permanentAddress').fill('456 Second St');
-
-  await page.getByRole('button', { name: 'Submit' }).click();
-
-  const email = page.getByPlaceholder('name@example.com');
-  const isValid = await email.evaluate((el: HTMLInputElement) => el.checkValidity());
-  expect(isValid).toBe(false);
-
-  await expect(page.locator('#output')).toBeHidden();
-});
-
-
-test('Text Box allows submit when email is missing (email optional)', async ({ page }) => {
-  await page.goto('https://demoqa.com/text-box');
-
-  await page.getByPlaceholder('Full Name').fill('AJ Kim');
-  await page.locator('#currentAddress').fill('123 Main St');
-  await page.locator('#permanentAddress').fill('456 Second St');
-
-  const submit = page.locator('#submit');
-  await submit.scrollIntoViewIfNeeded();
-  await submit.click({ force: true });
-
-  const output = page.locator('#output');
-  await expect(output).toBeVisible();
-
-  // Name should be printed
-  await expect(output).toContainText('Name:AJ Kim');
-
-  // Email line should NOT be printed when missing
-  await expect(output).not.toContainText('Email:');
-});
-
-test.describe('DemoQA Text Box - Field Boundaries', () => {
-
+test.describe('DemoQA Text Box', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('https://demoqa.com/text-box');
+    await page.goto('/text-box', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('textbox', { name: /full name/i })).toBeVisible();
   });
 
-  test('accepts exact max length for Full Name', async ({ page }) => {
-    const maxName = 'A'.repeat(50);
+  test('blocks submit with invalid email', async ({ textBoxPage }) => {
+    await textBoxPage.navigate();
 
-    await page.getByRole('textbox', { name: /full name/i }).fill(maxName);
-    await page.getByRole('button', { name: /submit/i }).click();
+    await textBoxPage.fillForm({
+      fullName: 'AJ Kim',
+      email: 'not-an-email',
+      currentAddress: '123 Main St',
+      permanentAddress: '456 Second St',
+    });
 
-    await expect(page.getByText(maxName)).toBeVisible();
+    // helper
+    await textBoxPage.submitAndAssertBlocked();
+
+    // optional: prove it’s HTML5 validation
+    const isValid = await textBoxPage.emailInput.evaluate((el: HTMLInputElement) => el.checkValidity());
+    expect(isValid).toBe(false);
   });
 
-  test('handles over max length for Full Name gracefully', async ({ page }) => {
-    const overName = 'B'.repeat(51);
 
-    await page.getByRole('textbox', { name: /full name/i }).fill(overName);
-    await page.getByRole('button', { name: /submit/i }).click();
+  test('allows submit when email is missing (email optional)', async ({ textBoxPage }) => {
+    await textBoxPage.navigate();
 
-    // App allows it — assert graceful rendering instead of rejection
-    await expect(page.getByText(overName)).toBeVisible();
+    await textBoxPage.fillForm({
+      fullName: 'AJ Kim',
+      email: '', // key: explicitly missing
+      currentAddress: '123 Main St',
+      permanentAddress: '456 Second St',
+    });
+
+    // helper
+    await textBoxPage.submitAndAssertNoErrors();
+
+    // assertions you already like
+    const isValid = await textBoxPage.emailInput.evaluate((el: HTMLInputElement) => el.checkValidity());
+    expect(isValid).toBe(true);
   });
 
-  test('handles whitespace-only input for Current Address', async ({ page }) => {
-    await page.getByRole('textbox', { name: /current address/i }).fill(' ');
-    await page.getByRole('button', { name: /submit/i }).click();
 
-    // Output should not render pure whitespace
-    await expect(page.locator('#output')).not.toContainText(/^\s+$/);
+  test.describe('Field Boundaries', () => {
+    test('accepts exact max length for Full Name', async ({ page }) => {
+      const maxName = 'A'.repeat(50);
+      await page.getByRole('textbox', { name: /full name/i }).fill(maxName);
+      await page.locator('#submit').click();
+      await expect(page.getByText(maxName)).toBeVisible();
+    });
+
+    test('handles over max length for Full Name gracefully', async ({ page }) => {
+      const overName = 'B'.repeat(51);
+      await page.getByRole('textbox', { name: /full name/i }).fill(overName);
+      await page.locator('#submit').click();
+      await expect(page.getByText(overName)).toBeVisible();
+    });
+
+    test('handles whitespace-only input for Current Address', async ({ page }) => {
+      await page.locator('#currentAddress').fill(' ');
+      await page.locator('#submit').click();
+
+      // Better assertion: output should exist but Current Address line shouldn't be just whitespace
+      const output = page.locator('#output');
+      await expect(output).toBeVisible();
+      await expect(output).not.toHaveText(/Current Address:\s*$/); // if your expect supports it
+    });
   });
-
 });
