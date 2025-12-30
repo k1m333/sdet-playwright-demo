@@ -65,5 +65,18 @@ export class TextBoxPage {
     await expect(this.outputCurrentAddress).toContainText(data.currentAddress);
     await expect(this.outputPermanentAddress).toContainText(data.permanentAddress);
   }
+
+  async submitAndAssertNoErrors() {
+    await this.submitButton.scrollIntoViewIfNeeded();
+    await this.submitButton.click();
+    await expect(this.outputPanel).toBeVisible();
+  }
+
+  async submitAndAssertBlocked() {
+    await this.submitButton.scrollIntoViewIfNeeded();
+    await this.submitButton.click();
+    await expect(this.outputPanel).toBeHidden();
+  }
+
 }
 
