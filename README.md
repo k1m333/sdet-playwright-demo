@@ -70,6 +70,11 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Recent Features
 
+### Submit & Assert Helpers
+- Added two helpers that click the button and assert
+  if the output panel is visible if happy path and
+  not visible if negative path.
+
 ### Boundary & Accessibility E2E Coverage
 - Validates max lengths for text inputs
 - Handles edge whitespace inputs
@@ -86,6 +91,12 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<summary>Monday, Dec 29, 2025</summary>
+- Added helpers for that submit and assert no errors
+  and submit and assert blocked and now using them
+  in the email happy path and negative path tests.
+</details>
+
 <details>
 <summary>Sunday, Dec 28, 2025</summary>
 - Added textbox boundaries test file to validate
