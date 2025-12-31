@@ -70,6 +70,10 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Recent Features
 
+### Refactor & Test Step
+- Standardized TextBox test and added test.step reporting
+  to show what line of code failed in logs in addition to GUI debugging.
+
 ### Submit & Assert Helpers
 - Added two helpers that click the button and assert
   if the output panel is visible if happy path and
@@ -91,6 +95,11 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<summary>Tuesday, Dec 29, 2025</summary>
+- Standardized TextBox tests by refactoring and added test.step
+  reporting so that logs can show what code lines failed.
+</details>
+
 <summary>Monday, Dec 29, 2025</summary>
 - Added helpers for that submit and assert no errors
   and submit and assert blocked and now using them
