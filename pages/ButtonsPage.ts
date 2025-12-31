@@ -1,5 +1,4 @@
-import { Page, Locator } from '@playwright/test';
-import { BASE_URL } from '../utils/env';
+import { expect, Page, Locator } from '@playwright/test';
 
 export class ButtonsPage {
   readonly page: Page;
@@ -29,7 +28,11 @@ export class ButtonsPage {
   }
 
   async goto() {
-    await this.page.goto(`${BASE_URL}/buttons`);
+    // IMPORTANT: DemoQA often hangs on "load" — use domcontentloaded
+    await this.page.goto('/buttons', { waitUntil: 'domcontentloaded' });
+
+    // "Ready" anchor so we don't proceed until the page is actually usable
+    await expect(this.doubleButton).toBeVisible();
   }
 
   async doubleClick() {

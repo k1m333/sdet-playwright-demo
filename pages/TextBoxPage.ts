@@ -41,8 +41,8 @@ export class TextBoxPage {
   }
 
   async navigate() {
-    await this.page.goto('https://demoqa.com/text-box');
-    await expect(this.page).toHaveURL(/text-box/);
+    await this.page.goto('/text-box', { waitUntil: 'domcontentloaded' });
+    await expect(this.page.getByRole('textbox', { name: /full name/i })).toBeVisible();
   }
 
   async fillForm(data: TextBoxFormData) {
