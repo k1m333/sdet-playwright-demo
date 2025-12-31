@@ -95,11 +95,13 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
 <summary>Tuesday, Dec 29, 2025</summary>
 - Standardized TextBox tests by refactoring and added test.step
   reporting so that logs can show what code lines failed.
 </details>
 
+<details>
 <summary>Monday, Dec 29, 2025</summary>
 - Added helpers for that submit and assert no errors
   and submit and assert blocked and now using them
