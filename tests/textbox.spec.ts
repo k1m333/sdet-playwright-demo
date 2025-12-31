@@ -1,5 +1,5 @@
 import { test } from './fixtures/test-fixtures';
- 
+
 test('Text Box form submits and shows correct output', async ({ textBoxPage }) => {
   const data = {
     fullName: 'AJ Kim',
@@ -8,8 +8,13 @@ test('Text Box form submits and shows correct output', async ({ textBoxPage }) =
     permanentAddress: '456 Second St',
   };
 
-  await textBoxPage.navigate();
-  await textBoxPage.fillForm(data);
-  await textBoxPage.submit();
-  await textBoxPage.expectOutput(data);
+  await test.step('Fill form', async () => {
+    await textBoxPage.fillForm(data);
+  });
+
+  await test.step('Submit and verify output', async () => {
+    await textBoxPage.submitAndAssertNoErrors();
+    await textBoxPage.expectOutput(data);
+  });
 });
+
