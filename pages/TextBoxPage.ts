@@ -52,6 +52,14 @@ export class TextBoxPage {
     await this.permanentAddressInput.fill(data.permanentAddress);
   }
 
+  async fillName(name: string) {
+    await this.fullNameInput.fill(name);
+  }
+
+  async fillEmail(email: string) {
+    await this.emailInput.fill(email);
+  }
+
   async submit() {
     await this.submitButton.scrollIntoViewIfNeeded();
     await this.submitButton.click();
@@ -64,6 +72,21 @@ export class TextBoxPage {
     await expect(this.outputEmail).toContainText(data.email);
     await expect(this.outputCurrentAddress).toContainText(data.currentAddress);
     await expect(this.outputPermanentAddress).toContainText(data.permanentAddress);
+  }
+
+  async expectOutputContains(expected: {
+    fullName?: string;
+    email?: string;
+  }) {
+    await expect(this.outputPanel).toBeVisible();
+
+    if (expected.fullName) {
+      await expect(this.outputName).toContainText(expected.fullName);
+    }
+
+    if (expected.email) {
+      await expect(this.outputEmail).toContainText(expected.email);
+    }
   }
 
   async submitAndAssertNoErrors() {

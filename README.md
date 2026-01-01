@@ -70,6 +70,10 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Recent Features
 
+### E2E Smoke Tests
+- Added smoke tests for critical user flows that run before
+  running deeper validation tests.
+
 ### Refactor & Test Step
 - Standardized TextBox test and added test.step reporting
   to show what line of code failed in logs in addition to GUI debugging.
@@ -96,7 +100,13 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Development Log (Personal)
 <details>
-<summary>Tuesday, Dec 29, 2025</summary>
+<summary>Tuesday, Dec 31, 2025</summary>
+- Added smoke tests for critical user flows with minimal assertions
+  that run before running deeper validation tests
+</details>
+
+<details>
+<summary>Tuesday, Dec 30, 2025</summary>
 - Standardized TextBox tests by refactoring and added test.step
   reporting so that logs can show what code lines failed.
 </details>
