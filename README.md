@@ -70,6 +70,10 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Recent Features
 
+## Screenshots on Failures
+- Added util testDiagnostics file for attaching a screenshot
+  whenever a test fails globally sent thru test-fixtures.
+
 ### E2E Smoke Tests
 - Added smoke tests for critical user flows that run before
   running deeper validation tests.
@@ -100,9 +104,15 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Development Log (Personal)
 <details>
-<summary>Tuesday, Dec 31, 2025</summary>
+<summary>Thursday, January 1, 2026</summary>
+- Added util testDiagnostics file exported thru text fixtures
+  so that screenshots are attached whenever a test fails.
+</details>
+
+<details>
+<summary>Wednesday, Dec 31, 2025</summary>
 - Added smoke tests for critical user flows with minimal assertions
-  that run before running deeper validation tests
+  that run before running deeper validation tests.
 </details>
 
 <details>
@@ -143,8 +153,7 @@ npx playwright test tests/buttons.spec.ts --debug
 </details>
 
 <details>
-<summary>Dec 21, 2025</summary>
-
+<summary>Sunday, Dec 21, 2025</summary>
 - Added Playwright tracing & debug commands
 - Documented CI artifacts
 </details>

@@ -1,5 +1,6 @@
 import { test as base, expect } from '@playwright/test';
 import { TextBoxPage } from '../../pages/TextBoxPage';
+import { attachScreenshotOnFailure } from '../../utils/testDiagnostics';
 
 type Fixtures = { textBoxPage: TextBoxPage };
 
@@ -15,3 +16,7 @@ export const test = base.extend<Fixtures>({
 });
 
 export { expect };
+
+test.afterEach(async ({ page }, testInfo) => {
+   await attachScreenshotOnFailure(page, testInfo);
+});
