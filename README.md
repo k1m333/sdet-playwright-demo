@@ -70,6 +70,10 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Recent Features
 
+## CheckBox page Smoke Test
+- Added CheckBoxPage POM and created a smoke test.
+  Will add to fixtures when more functional tests are made.
+
 ## Screenshots on Failures
 - Added util testDiagnostics file for attaching a screenshot
   whenever a test fails globally sent thru test-fixtures.
@@ -103,6 +107,12 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
+<summary>Thursday, January 2, 2026</summary>
+- Added CheckBoxPage POM and its smoke test. Will add
+  it to the fixtures when functional tests are made.
+</details>
+
 <details>
 <summary>Thursday, January 1, 2026</summary>
 - Added util testDiagnostics file exported thru text fixtures
