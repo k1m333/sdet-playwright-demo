@@ -1,6 +1,6 @@
 import { test } from './fixtures/test-fixtures';
 
-test('Text Box form submits and shows correct output', async ({ textBoxPage }) => {
+test('Text Box form submits and shows correct output @regression', async ({ textBoxPage }) => {
   const data = {
     fullName: 'AJ Kim',
     email: 'aj@test.com',

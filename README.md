@@ -21,6 +21,14 @@ This repo is a small but realistic example of how I structure UI test automation
 - **CI-ready**  
   `.github/workflows/playwright.yml` runs the full Playwright suite on every push/PR.
 
+## Test Strategy
+This project follows a layered test strategy to balance speed, signal, and coverage.
+
+### Test Layers
+- @smoke - fast page-load and critical-path validation
+- @regression - stable core user flows with assertions
+- functional / boundary - detailed edge-case and validation coverage
+
 ## Getting Started
 
 ```bash
@@ -70,11 +78,14 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Recent Features
 
-## CheckBox page Smoke Test
+### Test Layers
+- Added @regression tag to existing textbox test.
+
+### CheckBox page Smoke Test
 - Added CheckBoxPage POM and created a smoke test.
   Will add to fixtures when more functional tests are made.
 
-## Screenshots on Failures
+###  Screenshots on Failures
 - Added util testDiagnostics file for attaching a screenshot
   whenever a test fails globally sent thru test-fixtures.
 
@@ -107,6 +118,11 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
+<summary>Monday, January 5, 2026</summary>
+- Added @regression tag to existing textbox test.
+</details>
+
 <details>
 <summary>Friday, January 2, 2026</summary>
 - Added CheckBoxPage POM and its smoke test. Will add
