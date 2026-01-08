@@ -78,6 +78,9 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Recent Features
 
+### Checkbox Functional Test
+- Added Checkbox functional for expand and select behavior.
+
 ### Test Layers
 - Added @regression tag to existing textbox test.
 
@@ -118,6 +121,11 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
+<summary>Wednesday, January 7, 2026</summary>
+- Added functional checkbox test for expand all and checking box.
+</details>
+
 <details>
 <summary>Monday, January 5, 2026</summary>
 - Added @regression tag to existing textbox test.

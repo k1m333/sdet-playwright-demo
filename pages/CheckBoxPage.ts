@@ -18,5 +18,19 @@ export class CheckBoxPage {
   async goto() {
     await this.page.goto('/checkbox', { waitUntil: 'domcontentloaded' });
     await expect(this.heading).toBeVisible();
+    await expect(this.tree).toBeVisible();
+  }
+
+  async expandAll() {
+    await this.expandAllButton.click();
+  }
+
+  async selectFirstCheckbox() {
+    await this.firstCheckbox.click();
+  }
+
+  async expectFirstCheckboxChecked() {
+    const checkIcon = this.firstCheckbox.locator('svg.rct-icon-check');
+    await expect(checkIcon).toBeVisible();
   }
 }
