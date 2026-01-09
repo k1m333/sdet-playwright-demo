@@ -6,6 +6,7 @@ export class CheckBoxPage {
   readonly tree: Locator;
   readonly expandAllButton: Locator;
   readonly firstCheckbox: Locator;
+  readonly selectedResultItems: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -13,6 +14,7 @@ export class CheckBoxPage {
     this.tree = page.locator('#tree-node');
     this.expandAllButton = page.getByRole('button', { name: /expand all/i });
     this.firstCheckbox = page.locator('.rct-checkbox').first();
+    this.selectedResultItems = page.locator('#result span.text-success');
   }
 
   async goto() {
@@ -32,5 +34,10 @@ export class CheckBoxPage {
   async expectFirstCheckboxChecked() {
     const checkIcon = this.firstCheckbox.locator('svg.rct-icon-check');
     await expect(checkIcon).toBeVisible();
+  }
+
+  async getSelectedResults(): Promise<string[]> {
+    const items = await this.selectedResultItems.allTextContents();
+    return items.map(t => t.trim()).filter(Boolean);
   }
 }
