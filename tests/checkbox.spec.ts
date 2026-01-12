@@ -22,8 +22,14 @@ test('Expand all → select first checkbox → result panel shows a value', asyn
 
 test('Expand Home, check Downloads, and assert result reflects selection', async ({ page }) => {
   const checkBoxPage = new CheckBoxPage(page);
-  await checkBoxPage.goto();
-  await checkBoxPage.expandAll();
-  await page.locator('label[for="tree-node-downloads"] .rct-checkbox').click();
-  await expect(page.locator('#result')).toContainText('downloads');
+  await test.step("Navigate", async () => {
+    await checkBoxPage.goto();
+  });
+  await test.step("Expand and select Downloads", async () => {
+    await checkBoxPage.expandAll();
+    await page.locator('label[for="tree-node-downloads"] .rct-checkbox').click();
+  });
+  await test.step("Assert Downloads show in results panel", async () => {
+      await expect(page.locator('#result')).toContainText('downloads');
+  });
 });

@@ -83,6 +83,8 @@ npx playwright test tests/buttons.spec.ts --debug
   and show results.
 - Added functional test for expand all, check Downloads,
   and assert downloads shows in results.
+- Added test.step wrapper to show pass or fail on those a
+  few lines for easier debugging.
 
 ### Test Layers
 - Added @regression tag to existing textbox test.
@@ -124,6 +126,13 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
+<summary>Sunday, January 11, 2026</summary>
+- Added test.step wrapper on lines in the expand all, click Downloads,
+  and assert downloads in result text to show if those lines failed in
+  the npx playwright show-report artifacts for easier debugging.
+</details>
+
 <details>
 <summary>Friday, January 9, 2026</summary>
 - Added functional checkbox test for expand all, checking Downloads
