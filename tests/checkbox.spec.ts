@@ -33,3 +33,11 @@ test('Expand Home, check Downloads, and assert result reflects selection', async
       await expect(page.locator('#result')).toContainText('downloads');
   });
 });
+
+
+test('checkbox: expanding tree with no selection no results', async ({ page }) => {
+  const checkBoxPage = new CheckBoxPage(page);
+  await checkBoxPage.goto();
+  await checkBoxPage.expandAll();
+  await expect(checkBoxPage.getResultsPanel()).not.toBeVisible();
+});
