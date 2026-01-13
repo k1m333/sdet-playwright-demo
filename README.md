@@ -85,6 +85,7 @@ npx playwright test tests/buttons.spec.ts --debug
   and assert downloads shows in results.
 - Added test.step wrapper to show pass or fail on those a
   few lines for easier debugging.
+- Includes negative-path checkbox test when no items are selected.
 
 ### Test Layers
 - Added @regression tag to existing textbox test.
@@ -126,6 +127,11 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
+<summary>Monday, January 12, 2026</summary>
+- Included negative-path checkbox test when no items are selected.
+</details>
+
 <details>
 <summary>Sunday, January 11, 2026</summary>
 - Added test.step wrapper on lines in the expand all, click Downloads,

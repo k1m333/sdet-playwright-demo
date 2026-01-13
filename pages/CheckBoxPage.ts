@@ -40,4 +40,9 @@ export class CheckBoxPage {
     const items = await this.selectedResultItems.allTextContents();
     return items.map(t => t.trim()).filter(Boolean);
   }
+
+  getResultsPanel() {
+    return this.page.locator('#result');
+  }
+
 }
