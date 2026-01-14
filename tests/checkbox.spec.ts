@@ -41,3 +41,21 @@ test('checkbox: expanding tree with no selection no results', async ({ page }) =
   await checkBoxPage.expandAll();
   await expect(checkBoxPage.getResultsPanel()).not.toBeVisible();
 });
+
+test('Persistence: selected checkbox clears on reload', async ({ page }) => {
+  const checkBoxPage = new CheckBoxPage(page);
+
+  await checkBoxPage.goto();
+  await checkBoxPage.expandAll();
+
+  await test.step('select Word File document', async () => {
+    await page.getByText('Word File.doc').click();
+    await expect(page.locator('#result')).toContainText('wordFile');
+  });
+
+  await test.step('reload page and verify selection persistence', async () => {
+    await page.reload();
+    await expect(page.locator('#result')).not.toBeVisible();
+  });
+});
+
