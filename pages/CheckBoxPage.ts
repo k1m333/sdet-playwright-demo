@@ -19,6 +19,7 @@ export class CheckBoxPage {
 
   async goto() {
     await this.page.goto('/checkbox', { waitUntil: 'domcontentloaded' });
+    await this.waitForReady();
     await expect(this.heading).toBeVisible();
     await expect(this.tree).toBeVisible();
   }
@@ -43,6 +44,11 @@ export class CheckBoxPage {
 
   getResultsPanel() {
     return this.page.locator('#result');
+  }
+
+  async waitForReady() {
+    await expect(this.page).toHaveURL(/\/checkbox\b/i);
+    await expect(this.heading).toBeVisible();
   }
 
 }
