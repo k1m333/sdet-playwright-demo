@@ -87,6 +87,7 @@ npx playwright test tests/buttons.spec.ts --debug
   few lines for easier debugging.
 - Includes negative-path checkbox test when no items are selected.
 - Added negative test to show reload page doesn't persist checked .dox file.
+- Added waitForReady function to make sure all CheckBoxPage tests verify the URL.
 
 ### Test Layers
 - Added @regression tag to existing textbox test.
@@ -128,6 +129,11 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
+<summary>Wednesday, January 14, 2026</summary>
+- - Added waitForReady function to make sure all CheckBoxPage tests verify the URL.
+</details>
+
 <details>
 <summary>Tuesday, January 13, 2026</summary>
 - Included negative-path checkbox test on reload.
