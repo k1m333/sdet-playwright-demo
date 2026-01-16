@@ -88,6 +88,7 @@ npx playwright test tests/buttons.spec.ts --debug
 - Includes negative-path checkbox test when no items are selected.
 - Added negative test to show reload page doesn't persist checked .dox file.
 - Added waitForReady function to make sure all CheckBoxPage tests verify the URL.
+- Added test to assert Downloads selection persists after collapse all.
 
 ### Test Layers
 - Added @regression tag to existing textbox test.
@@ -130,8 +131,13 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Development Log (Personal)
 <details>
+<summary>Wednesday, January 15, 2026</summary>
+- Added test to assert Downloads selection persists after collapse all.
+</details>
+
+<details>
 <summary>Wednesday, January 14, 2026</summary>
-- - Added waitForReady function to make sure all CheckBoxPage tests verify the URL.
+- Added waitForReady function to make sure all CheckBoxPage tests verify the URL.
 </details>
 
 <details>

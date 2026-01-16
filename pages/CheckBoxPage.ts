@@ -5,16 +5,20 @@ export class CheckBoxPage {
   readonly heading: Locator;
   readonly tree: Locator;
   readonly expandAllButton: Locator;
+  readonly collapseAllBtn: Locator;
   readonly firstCheckbox: Locator;
   readonly selectedResultItems: Locator;
+  readonly results: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.heading = page.getByRole('heading', { name: /check box/i });
     this.tree = page.locator('#tree-node');
     this.expandAllButton = page.getByRole('button', { name: /expand all/i });
+    this.collapseAllBtn = page.getByRole('button', { name: /collapse all/i });
     this.firstCheckbox = page.locator('.rct-checkbox').first();
     this.selectedResultItems = page.locator('#result span.text-success');
+    this.results = page.locator('#result');
   }
 
   async goto() {
@@ -49,6 +53,10 @@ export class CheckBoxPage {
   async waitForReady() {
     await expect(this.page).toHaveURL(/\/checkbox\b/i);
     await expect(this.heading).toBeVisible();
+  }
+
+  async collapseAll() {
+    await this.collapseAllBtn.click();
   }
 
 }
