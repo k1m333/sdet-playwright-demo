@@ -59,3 +59,16 @@ test('Persistence: selected checkbox clears on reload', async ({ page }) => {
   });
 });
 
+test('Select checkbox, collapse tree, and results persist', async ({ page }) => {
+  const checkBoxPage = new CheckBoxPage(page);
+  await checkBoxPage.goto();
+  await checkBoxPage.expandAll();
+    await test.step("Expand and select Downloads", async () => {
+    await checkBoxPage.expandAll();
+    await page.locator('label[for="tree-node-downloads"] .rct-checkbox').click();
+  });
+  await expect(checkBoxPage.results).toContainText(/downloads/i);
+  await checkBoxPage.collapseAll();
+  await expect(checkBoxPage.results).toContainText(/downloads/i);
+});
+
