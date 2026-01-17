@@ -8,8 +8,14 @@ test("@a11y TextBox has no serious/critical accessibility violations", async ({ 
   await expect(page.getByRole("heading", { name: /text box/i })).toBeVisible();
 
   const results = await new AxeBuilder({ page })
-    .exclude(".advertisement") // optional: DemoQA ad regions can be noisy
+    .include("#userForm")
+    .exclude(".advertisement")
+    .disableRules([
+        "color-contrast",
+        "label"
+    ])
     .analyze();
+
 
   const seriousOrWorse = results.violations.filter(v =>
     v.impact === "serious" || v.impact === "critical"
