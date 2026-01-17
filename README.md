@@ -28,6 +28,7 @@ This project follows a layered test strategy to balance speed, signal, and cover
 - @smoke - fast page-load and critical-path validation
 - @regression - stable core user flows with assertions
 - functional / boundary - detailed edge-case and validation coverage
+- @a11y - accessiblity gate ensuring the app is usable.
 
 ## Getting Started
 
@@ -35,6 +36,7 @@ This project follows a layered test strategy to balance speed, signal, and cover
 npm install
 npx playwright install
 npm test
+npx playwright test --grep @a11y
 ```
 
 ## Debug Mode
@@ -77,6 +79,9 @@ npx playwright test tests/buttons.spec.ts --debug
 ```
 
 ## Recent Features
+
+### A11y Accessiblity Gate
+- Added TextBox a11y functional test to ensure the page is usable.
 
 ### Checkbox Functional Test
 - Added Checkbox functional for expand, select checkbox,
@@ -131,7 +136,12 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Development Log (Personal)
 <details>
-<summary>Wednesday, January 15, 2026</summary>
+<summary>Friday, January 16, 2026</summary>
+- Functional checkbox test with a11y to ensure the page is usable.
+</details>
+
+<details>
+<summary>Thursday, January 15, 2026</summary>
 - Added test to assert Downloads selection persists after collapse all.
 </details>
 
