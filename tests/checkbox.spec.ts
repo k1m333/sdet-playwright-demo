@@ -69,6 +69,8 @@ test('Select checkbox, collapse tree, and results persist', async ({ page }) => 
   });
   await expect(checkBoxPage.results).toContainText(/downloads/i);
   await checkBoxPage.collapseAll();
-  await expect(checkBoxPage.results).toContainText(/downloads/i);
+  await test.step('Verify selection still appears in results', async () => {
+      await expect(checkBoxPage.results).toContainText(/downloads/i);
+  });
 });
 

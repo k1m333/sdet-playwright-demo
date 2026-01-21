@@ -94,6 +94,7 @@ npx playwright test tests/buttons.spec.ts --debug
 - Added negative test to show reload page doesn't persist checked .dox file.
 - Added waitForReady function to make sure all CheckBoxPage tests verify the URL.
 - Added test to assert Downloads selection persists after collapse all.
+- Shadow rep practice for selection results persistence.
 
 ### Test Layers
 - Added @regression tag to existing textbox test.
@@ -135,6 +136,12 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
+<summary>Saturday, January 16, 2026</summary>
+- Shadow-repped functional test for expand all, selecting Downloads, collpase all,
+  and making sure Downloads still in results.
+</details>
+
 <details>
 <summary>Friday, January 16, 2026</summary>
 - Functional checkbox test with a11y to ensure the page is usable.
