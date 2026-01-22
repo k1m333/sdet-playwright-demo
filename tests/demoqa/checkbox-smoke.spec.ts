@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/test-fixtures';
-import { CheckBoxPage } from '../pages/CheckBoxPage';
+import { test, expect } from './fixtures/test-fixtures';
+import { CheckBoxPage } from '../../pages/CheckBoxPage';
 
 test.describe('Check Box page @smoke', () => {
   test('loads and renders the checkbox tree', async ({ page }) => {
