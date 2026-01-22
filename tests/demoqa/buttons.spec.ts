@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/test-fixtures';
-import { ButtonsPage } from '../pages/ButtonsPage';
+import { test, expect } from './fixtures/test-fixtures';
+import { ButtonsPage } from '../../pages/ButtonsPage';
 
 test.describe('Buttons page @smoke', () => {
   test.beforeEach(async ({ page }) => {

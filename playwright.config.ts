@@ -17,8 +17,14 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] }
-    }
+      name: 'demoqa-chromium',
+      testDir: './tests/demoqa',
+      use: { ...devices['Desktop Chrome'], baseURL: 'https://demoqa.com' },
+    },
+    {
+      name: 'youtube-chromium',
+      testDir: './tests/youtube',
+      use: { ...devices['Desktop Chrome'], baseURL: 'https://www.youtube.com' },
+    },
   ],
 });

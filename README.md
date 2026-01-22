@@ -80,6 +80,9 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Recent Features
 
+### YouTube Functional Test
+- Add YouTube logged-out search with POM.
+
 ### A11y Accessiblity Gate
 - Added TextBox a11y functional test to ensure the page is usable.
 
@@ -136,6 +139,11 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
+<summary>Wednesday, January 21, 2026</summary>
+- Add YouTube logged-out search test with POM
+</details>
+
 <details>
 <summary>Saturday, January 16, 2026</summary>
 - Shadow-repped functional test for expand all, selecting Downloads, collpase all,

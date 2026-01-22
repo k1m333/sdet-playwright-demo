@@ -1,5 +1,5 @@
-import { expect, test } from '../fixtures/test-fixtures';
-import { CheckBoxPage } from '../pages/CheckBoxPage';
+import { expect, test } from '../../fixtures/test-fixtures';
+import { CheckBoxPage } from '../../pages/CheckBoxPage';
 
 test('expands tree and select a checkbox', async ({ page }) => {
     const checkBoxPage = new CheckBoxPage(page);

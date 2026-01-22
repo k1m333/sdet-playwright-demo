@@ -1,6 +1,6 @@
 import { test as base, expect } from '@playwright/test';
-import { TextBoxPage } from '../../pages/TextBoxPage';
-import { attachScreenshotOnFailure } from '../../utils/testDiagnostics';
+import { TextBoxPage } from '../../../pages/TextBoxPage';
+import { attachScreenshotOnFailure } from '../../../utils/testDiagnostics';
 
 type Fixtures = { textBoxPage: TextBoxPage };
 
