@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+   <head>
+      <meta charset="utf-8" />
+      <title>Audit Console</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <style>
+         body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: 16px; }
+         .row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+         input { padding: 8px; }
+         button { padding: 8px 12px; }
+         table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+         th, td { border: 1px solid #ddd; padding: 8px; }
+         #status { margin-top: 8px; }
+      </style>
+   </head>
+   <body>
+      <h1>Audit Console</h1>
+      <h2>Ingest</h2>
+      <div class="row">
+         <input id="eventId" placeholder="eventId" />
+         <input id="tenantId" placeholder="tenantId" value="t1" />
+         <input id="actor" placeholder="actor" value="aj" />
+         <input id="action" placeholder="action" value="LOGIN" />
+         <input id="resource" placeholder="resource" value="console" />
+         <button id="ingestBtn">Ingest</button>
+      </div>
+      <div id="status"></div>
+      <h2>Search</h2>
+      <div class="row">
+         <input id="query" placeholder="search (eventId/actor/action/resource)" />
+         <button id="searchBtn">Search</button>
+      </div>
+      <table>
+         <thead>
+            <tr>
+               <th>eventId</th>
+               <th>tenantId</th>
+               <th>actor</th>
+               <th>action</th>
+               <th>resource</th>
+               <th>ts</th>
+            </tr>
+         </thead>
+         <tbody id="results"></tbody>
+      </table>
+      <script>
+         const API = "http://localhost:4177";
+         const $ = (id) => document.getElementById(id);
+         $("ingestBtn").addEventListener("click", async () => {
+         const eventId = $("eventId").value || `evt-${Date.now()}`;
+         $("eventId").value = eventId;
+         const body = {
+         eventId,
+         tenantId: $("tenantId").value,
+         actor: $("actor").value,
+         action: $("action").value,
+         resource: $("resource").value,
+         ts: new Date().toISOString()
+         };
+         const res = await fetch(`${API}/api/events`, {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify(body)
+         });
+         const json = await res.json();
+         $("status").textContent = `${res.status}: ${json.status} (${json.eventId})`;
+         });
+         $("searchBtn").addEventListener("click", async () => {
+         const q = encodeURIComponent($("query").value || "");
+         const tenantId = encodeURIComponent($("tenantId").value || "");
+         const res = await fetch(`${API}/api/events?tenantId=${tenantId}&q=${q}`);
+         const json = await res.json();
+         const tbody = $("results");
+         tbody.innerHTML = "";
+         for (const e of json.events) {
+         const tr = document.createElement("tr");
+         tr.innerHTML = `
+         <td>${e.eventId}</td>
+         <td>${e.tenantId}</td>
+         <td>${e.actor}</td>
+         <td>${e.action}</td>
+         <td>${e.resource}</td>
+         <td>${e.ts}</td>
+         `;
+         tbody.appendChild(tr);
+         }
+         });
+      </script>
+   </body>
+</html>

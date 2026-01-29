@@ -80,6 +80,9 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ## Recent Features
 
+### Amazon Audit Log Test
+- Made an audit console app with ui and backend using node to verify failure diagnostics.
+
 ### YouTube Functional Test
 - Add YouTube logged-out search with POM.
 
@@ -139,6 +142,11 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
+<summary>Tuesday, January 27, 2026</summary>
+- Made an audit console app with ui & backend to verify failure diagnostics.
+</details>
+
 <details>
 <summary>Wednesday, January 21, 2026</summary>
 - Add YouTube logged-out search test with POM
