@@ -82,6 +82,7 @@ npx playwright test tests/buttons.spec.ts --debug
 
 ### Amazon Audit Log Test
 - Made an audit console app with ui and backend using node to verify failure diagnostics.
+- Added idempotency test and composite key event + tenant id.
 
 ### YouTube Functional Test
 - Add YouTube logged-out search with POM.
@@ -142,6 +143,11 @@ npx playwright test tests/buttons.spec.ts --debug
 - Negative path (invalid/missing email blocks submission)
 
 ## Development Log (Personal)
+<details>
+<summary>Friday, January 30, 2026</summary>
+- Added idempotency test and composite key event + tenant id.
+</details>
+
 <details>
 <summary>Tuesday, January 27, 2026</summary>
 - Made an audit console app with ui & backend to verify failure diagnostics.

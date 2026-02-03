@@ -16,16 +16,19 @@ const seenEventIds = new Set<string>();
 app.post("/api/events", (req, res) => {
     const e = req.body as Partial<AuditEvent>;
     if (!e.eventId || !e.tenantId || !e.actor || !e.action || !e.resource || !e.ts) {
-    return res.status(400).json({ error: "Missing required fields" });
-}
-// Idempotency: same eventId => accept but don't duplicate
-if (seenEventIds.has(e.eventId)) {
-    return res.status(200).json({ status: "duplicate_accepted", eventId: e.eventId });
-}
-seenEventIds.add(e.eventId);
-events.push(e as AuditEvent);
-    return res.status(201).json({ status: "created", eventId: e.eventId });
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const key = `${e.tenantId}:${e.eventId}`;
+    // Idempotency: same eventId => accept but don't duplicate
+    if (seenEventIds.has(key)) {
+        return res.status(200).json({ status: "duplicate_accepted", eventId: e.eventId });
+    }
+    seenEventIds.add(key);
+    events.push(e as AuditEvent);
+        return res.status(201).json({ status: "created", eventId: e.eventId });
 });
+
 app.get("/api/events", (req, res) => {
     const tenantId = String(req.query.tenantId ?? "");
     const q = String(req.query.q ?? "").toLowerCase();
@@ -38,9 +41,11 @@ app.get("/api/events", (req, res) => {
     }
     return res.json({ count: out.length, events: out });
 });
+
 app.get('/health', (_req, res) => {
   res.status(200).json({ ok: true });
 });
 
 const port = Number(process.env.PORT ?? 4177);
 app.listen(port, () => console.log(`audit-console server on http://localhost:${port}`));
+
