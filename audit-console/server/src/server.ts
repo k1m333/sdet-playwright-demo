@@ -33,7 +33,68 @@ app.use(express.json());
 const events: AuditEvent[] = [];
 const eventFingerprints = new Map<string, string>();
 
-app.post("/api/events", (req, res) => {
+type Bucket = { count: number; resetAtMs: number };
+
+function createRateLimiter(opts: {
+  windowMs: number; // e.g. 10_000
+  max: number;      // e.g. 5
+  keyFn?: (req: express.Request) => string;
+}) {
+  const { windowMs, max } = opts;
+  const keyFn =
+    opts.keyFn ??
+    ((req) => {
+      const tenant = (req.body?.tenantId ?? req.query?.tenantId) as string | undefined;
+      return tenant?.trim() ? `tenant:${tenant.trim()}` : `ip:${req.ip || "unknown"}`;
+    });
+
+  const buckets = new Map<string, Bucket>();
+
+  // Light GC to avoid unbounded growth
+  const GC_EVERY_MS = 60_000;
+  let lastGc = Date.now();
+
+  return function rateLimit(req: express.Request, res: express.Response, next: express.NextFunction) {
+    const now = Date.now();
+
+    if (now - lastGc > GC_EVERY_MS) {
+      lastGc = now;
+      for (const [k, b] of buckets.entries()) {
+        if (b.resetAtMs <= now) buckets.delete(k);
+      }
+    }
+
+    const key = keyFn(req);
+    const b = buckets.get(key);
+
+    if (!b || b.resetAtMs <= now) {
+      buckets.set(key, { count: 1, resetAtMs: now + windowMs });
+      return next();
+    }
+
+    b.count += 1;
+
+    if (b.count > max) {
+      const retryAfterMs = Math.max(0, b.resetAtMs - now);
+      res.setHeader("Retry-After", String(Math.ceil(retryAfterMs / 1000)));
+      return res.status(429).json({
+        error: "rate_limited",
+        retryAfterMs,
+        limit: max,
+        windowMs,
+      });
+    }
+
+    return next();
+  };
+}
+
+const rateLimitPostEvents = createRateLimiter({
+  windowMs: 10_000,
+  max: 5,
+});
+
+app.post("/api/events", rateLimitPostEvents, (req, res) => {
   const e = req.body as Partial<AuditEvent>;
   if (!e.eventId || !e.tenantId || !e.actor || !e.action || !e.resource || !e.ts) {
     return res.status(400).json({ error: "Missing required fields" });
