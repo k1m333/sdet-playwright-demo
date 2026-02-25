@@ -10,6 +10,41 @@ import cors from "cors";
 };
 import crypto from "node:crypto";
 
+// ---- 503 Circuit Breaker (simulated dependency failures) ----
+let failures = 0;
+let circuitOpen = false;
+let lastFailureTime = 0;
+
+const FAILURE_THRESHOLD = 5;
+const COOLDOWN_MS = 10_000;
+
+function checkCircuit(res: express.Response) {
+  if (circuitOpen) {
+    const now = Date.now();
+    if (now - lastFailureTime > COOLDOWN_MS) {
+      circuitOpen = false; // half-open: allow a try
+      failures = 0;
+      return false;
+    }
+    res.status(503).json({ error: "service_unavailable", reason: "circuit_open" });
+    return true;
+  }
+  return false;
+}
+
+function recordFailure() {
+  failures += 1;
+  lastFailureTime = Date.now();
+  if (failures >= FAILURE_THRESHOLD) {
+    circuitOpen = true;
+  }
+}
+
+function recordSuccess() {
+  failures = 0;
+  circuitOpen = false;
+}
+
 // make a stable "fingerprint" of the immutable parts of the event
 function stableStringify(obj) {
   return JSON.stringify(obj, Object.keys(obj).sort());
@@ -94,31 +129,81 @@ const rateLimitPostEvents = createRateLimiter({
   max: 5,
 });
 
-app.post("/api/events", rateLimitPostEvents, (req, res) => {
-  const e = req.body as Partial<AuditEvent>;
-  if (!e.eventId || !e.tenantId || !e.actor || !e.action || !e.resource || !e.ts) {
-    return res.status(400).json({ error: "Missing required fields" });
+async function persistEventOrThrow(req: express.Request, e: AuditEvent) {
+  // Simulate an outage using a header OR env var
+  const forceFailHeader = String(req.header("x-simulate-db-down") ?? "").toLowerCase();
+  const forceFailEnv = String(process.env.SIMULATE_DB_DOWN ?? "").toLowerCase();
+
+  const shouldFail =
+    forceFailHeader === "1" ||
+    forceFailHeader === "true" ||
+    forceFailEnv === "1" ||
+    forceFailEnv === "true";
+
+  if (shouldFail) {
+    throw new Error("Simulated dependency failure");
   }
 
-  const key = `${e.tenantId}:${e.eventId}`;
-  const incomingFp = fingerprintEvent(e);
+  // “Write” succeeds: keep your existing in-memory store behavior
+  events.push(e);
+}
 
-  const existingFp = eventFingerprints.get(key);
-  if (existingFp) {
-    if (existingFp !== incomingFp) {
-      return res.status(409).json({
-        status: "conflict",
-        eventId: e.eventId,
-        message: "eventId already exists with different payload (immutable event)",
+app.post(
+  "/api/events",
+  (req, res, next) => {
+    if (checkCircuit(res)) return;
+    next();
+  },
+  rateLimitPostEvents,
+  async (req, res) => {
+    try {
+      const e = req.body as Partial<AuditEvent>;
+      if (!e.eventId || !e.tenantId || !e.actor || !e.action || !e.resource || !e.ts) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const key = `${e.tenantId}:${e.eventId}`;
+      const incomingFp = fingerprintEvent(e);
+
+      const existingFp = eventFingerprints.get(key);
+      if (existingFp) {
+        if (existingFp !== incomingFp) {
+          return res.status(409).json({
+            status: "conflict",
+            eventId: e.eventId,
+            message: "eventId already exists with different payload (immutable event)",
+          });
+        }
+        // Duplicate accepted counts as "success" (dependency not called)
+        recordSuccess();
+        return res.status(200).json({ status: "duplicate_accepted", eventId: e.eventId });
+      }
+
+      // Reserve fingerprint before write (like a uniqueness constraint)
+      eventFingerprints.set(key, incomingFp);
+
+      // Simulated dependency write that can fail
+      await persistEventOrThrow(req, e as AuditEvent);
+
+      recordSuccess();
+      return res.status(201).json({ status: "created", eventId: e.eventId });
+    } catch (err) {
+      // If the "DB write" fails, roll back the fingerprint reservation
+      const e = req.body as Partial<AuditEvent>;
+      if (e?.tenantId && e?.eventId) {
+        eventFingerprints.delete(`${e.tenantId}:${e.eventId}`);
+      }
+
+      recordFailure();
+      return res.status(503).json({
+        error: "service_unavailable",
+        reason: "dependency_failure",
+        failures,
+        circuitOpen,
       });
     }
-    return res.status(200).json({ status: "duplicate_accepted", eventId: e.eventId });
   }
-
-  eventFingerprints.set(key, incomingFp);
-  events.push(e as AuditEvent);
-  return res.status(201).json({ status: "created", eventId: e.eventId });
-});
+);
 
 app.get("/api/events", (req, res) => {
     const tenantId = String(req.query.tenantId ?? "");
