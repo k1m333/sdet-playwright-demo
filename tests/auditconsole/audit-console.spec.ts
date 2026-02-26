@@ -161,3 +161,14 @@ test('POST /api/events returns 503 when dependency fails', async ({ request }) =
   // 503 should not use Retry-After (that's your 429 contract)
   expect(res.headers()['retry-after']).toBeUndefined();
 });
+
+test('returns x-request-id header for observability', async ({ request }) => {
+  const base = process.env.AUDIT_API_BASE_URL ?? "http://localhost:4177";
+  const url = `${base}/health`;
+  const response = await request.get(url);
+
+  expect(response.status()).toBe(200);
+
+  const headers = response.headers();
+  expect(headers['x-request-id']).toBeTruthy();
+});

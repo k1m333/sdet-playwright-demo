@@ -65,6 +65,81 @@ function fingerprintEvent(e) {
 const app = express();
 app.use(cors());
 app.use(express.json());
+// ---- observability: request id + latency + structured logs ----
+type ReqCtx = {
+  reqId: string;
+  startMs: number;
+  tenantId?: string;
+  eventId?: string;
+  reason?: string; // "created" | "duplicate_accepted" | "conflict" | "bad_request" | ...
+};
+
+function getHeaderString(req: express.Request, name: string): string | undefined {
+  const v = req.header(name);
+  return v ? String(v) : undefined;
+}
+
+function makeReqId(req: express.Request) {
+  return getHeaderString(req, "x-request-id") ?? `${Date.now()}-${Math.random()}`;
+}
+
+function logEvent(ctx: {
+  type: string;
+  reqId: string;
+  method: string;
+  path: string;
+  status: number;
+  reason: string;
+  latencyMs: number;
+  tenantId?: string;
+  eventId?: string;
+}) {
+  console.log({
+    type: ctx.type,
+    reqId: ctx.reqId,
+    method: ctx.method,
+    path: ctx.path,
+    tenantId: ctx.tenantId,
+    eventId: ctx.eventId,
+    status: ctx.status,
+    reason: ctx.reason,
+    latencyMs: ctx.latencyMs,
+  });
+}
+
+app.use((req, res, next) => {
+  const reqId = makeReqId(req);
+
+  res.setHeader("x-request-id", reqId);
+
+  const ctx: ReqCtx = {
+    reqId,
+    startMs: Date.now(),
+  };
+
+  (req as any).ctx = ctx;
+
+  res.on("finish", () => {
+    const c = (req as any).ctx as ReqCtx | undefined;
+
+    const latencyMs = c ? Date.now() - c.startMs : 0;
+
+    logEvent({
+      type: "http_request",
+      reqId: c?.reqId ?? "unknown",
+      method: req.method,
+      path: req.path,
+      status: res.statusCode,
+      reason: c?.reason ?? "unknown",
+      latencyMs,
+      tenantId: c?.tenantId,
+      eventId: c?.eventId,
+    });
+  });
+
+  next();
+});
+
 const events: AuditEvent[] = [];
 const eventFingerprints = new Map<string, string>();
 
@@ -151,14 +226,26 @@ async function persistEventOrThrow(req: express.Request, e: AuditEvent) {
 app.post(
   "/api/events",
   (req, res, next) => {
-    if (checkCircuit(res)) return;
+    if (checkCircuit(res)) {
+      const ctx = (req as any).ctx as ReqCtx;
+      ctx.reason = "circuit_open";
+      return;
+    }
     next();
   },
   rateLimitPostEvents,
   async (req, res) => {
+    const ctx = (req as any).ctx as ReqCtx;
+
     try {
       const e = req.body as Partial<AuditEvent>;
+
+      // attach identifiers early for logging
+      ctx.tenantId = e?.tenantId;
+      ctx.eventId = e?.eventId;
+
       if (!e.eventId || !e.tenantId || !e.actor || !e.action || !e.resource || !e.ts) {
+        ctx.reason = "bad_request_missing_fields";
         return res.status(400).json({ error: "Missing required fields" });
       }
 
@@ -168,33 +255,34 @@ app.post(
       const existingFp = eventFingerprints.get(key);
       if (existingFp) {
         if (existingFp !== incomingFp) {
+          ctx.reason = "conflict_immutable_event";
           return res.status(409).json({
             status: "conflict",
             eventId: e.eventId,
             message: "eventId already exists with different payload (immutable event)",
           });
         }
-        // Duplicate accepted counts as "success" (dependency not called)
+
         recordSuccess();
+        ctx.reason = "duplicate_accepted";
         return res.status(200).json({ status: "duplicate_accepted", eventId: e.eventId });
       }
 
-      // Reserve fingerprint before write (like a uniqueness constraint)
       eventFingerprints.set(key, incomingFp);
 
-      // Simulated dependency write that can fail
       await persistEventOrThrow(req, e as AuditEvent);
 
       recordSuccess();
+      ctx.reason = "created";
       return res.status(201).json({ status: "created", eventId: e.eventId });
     } catch (err) {
-      // If the "DB write" fails, roll back the fingerprint reservation
       const e = req.body as Partial<AuditEvent>;
       if (e?.tenantId && e?.eventId) {
         eventFingerprints.delete(`${e.tenantId}:${e.eventId}`);
       }
 
       recordFailure();
+      ctx.reason = "dependency_failure";
       return res.status(503).json({
         error: "service_unavailable",
         reason: "dependency_failure",
@@ -206,16 +294,24 @@ app.post(
 );
 
 app.get("/api/events", (req, res) => {
-    const tenantId = String(req.query.tenantId ?? "");
-    const q = String(req.query.q ?? "").toLowerCase();
-    let out = events;
-    if (tenantId) out = out.filter(e => e.tenantId === tenantId);
-    if (q) {
-        out = out.filter(e =>
-        `${e.eventId} ${e.actor} ${e.action} ${e.resource}`.toLowerCase().includes(q)
-        );
-    }
-    return res.json({ count: out.length, events: out });
+  const ctx = (req as any).ctx as ReqCtx;
+
+  const tenantId = String(req.query.tenantId ?? "");
+  ctx.tenantId = tenantId || undefined;
+
+  ctx.reason = "query_events";
+
+  const q = String(req.query.q ?? "").toLowerCase();
+  let out = events;
+
+  if (tenantId) out = out.filter((e) => e.tenantId === tenantId);
+  if (q) {
+    out = out.filter((e) =>
+      `${e.eventId} ${e.actor} ${e.action} ${e.resource}`.toLowerCase().includes(q)
+    );
+  }
+
+  return res.json({ count: out.length, events: out });
 });
 
 app.get('/health', (_req, res) => {
