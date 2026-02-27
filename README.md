@@ -1,99 +1,60 @@
-# Audit Console — Correctness & Reliability Guardrails (200 / 409 / 429 / 503)
+# LLM Reliability Evaluation Platform
 
-A tiny audit-log ingestion service designed to demonstrate **correctness under retries**, **immutability enforcement**, **backpressure via rate limiting**, and **resilience to dependency failures**.
+A small platform for **testing LLM reliability classification** using deterministic rules and automated evaluation.
 
-The system models reliability guardrails commonly used in distributed systems such as internal AWS tooling, compliance pipelines, and audit logging systems.
-
----
-
-# What this app proves
-
-## 1) 200 OK — Idempotent duplicates (safe retries)
-
-If the same `(tenantId, eventId)` is ingested more than once **with the same immutable payload**, the server treats it as a safe retry and returns:
-
-- **200 OK**
-- `status: "duplicate_accepted"`
-
-This models **at-least-once delivery** behavior where clients may retry due to timeouts, network errors, or uncertain acknowledgements.
-
-Duplicate ingestion does not create multiple records, ensuring **exactly-once storage semantics at the application level**.
+The system generates reliability events, computes a deterministic ground truth, and verifies that a model correctly classifies system severity.
 
 ---
 
-## 2) 409 Conflict — Immutability / write-once semantics
+## Architecture
 
-If the same `(tenantId, eventId)` is ingested again but **immutable fields differ**, the server rejects the request:
+Dataset Generator → Ground Truth Oracle → LLM Classifier → Evaluation Harness
 
-- **409 Conflict**
-- `status: "conflict"`
+- **Dataset Generator**  
+  Audit Console API (Node.js + Express) generates reliability events  
+  201 Created  
+  200 Idempotent Replay  
+  409 Immutable Conflict  
+  429 Rate Limited  
+  503 Dependency Failure  
 
-This enforces **write-once audit semantics**.
+- **Ground Truth Oracle**  
+  Deterministic rules map status codes to severity levels
 
-Once an event is created, its immutable fields cannot change. This pattern is common in **security logging, compliance systems, and audit pipelines** where historical records must remain tamper-resistant.
+- **LLM Classifier (Model Under Test)**  
+  Model predicts system severity and returns a label with rationale
 
----
+- **Evaluation Harness**  
+  Playwright tests compare model output with deterministic ground truth
 
-## 3) 429 Too Many Requests — Rate limiting / backpressure
-
-If a client exceeds the configured request budget within a time window, the server returns:
-
-- **429 Too Many Requests**
-- `Retry-After` header (seconds)
-- JSON body includes `retryAfterMs`
-
-This protects storage and downstream systems during bursts and provides deterministic client backoff guidance.
-
-Typical real-world motivations include:
-
-- retry storms
-- burst traffic
-- misconfigured clients
+Result: **PASS / FAIL**
 
 ---
 
-## 4) 503 Service Unavailable — Circuit breaker protection
+## Severity Rules
 
-If the downstream dependency (simulated storage layer) fails repeatedly, the service opens a **circuit breaker**.
+| Status Code | Severity |
+|-------------|----------|
+| 200 / 201   | NONE |
+| 409         | LOW |
+| 429         | MEDIUM |
+| 503         | HIGH |
 
-Behavior:
+Example:
 
-- repeated dependency failures trigger the breaker
-- the service temporarily rejects requests with **503 Service Unavailable**
-- after a cooldown period, the circuit transitions to **half-open** and allows a probe request
-
-Responses include:
-
-- **503 Service Unavailable**
-- `reason: "dependency_failure"` or `"circuit_open"`
-
-This prevents cascading failures and protects system availability while dependencies recover.
+events: [429, 503]  
+severity: HIGH
 
 ---
 
-## 5) Observability — Request tracing & structured logs
+## LLM Output Format
 
-Every request generates a structured log event containing:
+The classifier returns a severity label and evidence-based rationale.
 
-- request correlation ID (`reqId`)
-- HTTP method and path
-- status code
-- latency (ms)
-- tenantId
-- eventId
-- reason (created, duplicate, conflict, rate_limited, dependency_failure)
-
-Example log output:
+Example:
 
 ```json
 {
-  "type": "http_request",
-  "reqId": "1700000000000-0.1234",
-  "method": "POST",
-  "path": "/api/events",
-  "tenantId": "tenant-1",
-  "eventId": "evt-123",
-  "status": 201,
-  "reason": "created",
-  "latencyMs": 3
+  "label": "MEDIUM",
+  "rationale": "Severity MEDIUM due to rate limiting (429)."
 }
