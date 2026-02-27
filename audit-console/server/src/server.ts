@@ -314,6 +314,69 @@ app.get("/api/events", (req, res) => {
   return res.json({ count: out.length, events: out });
 });
 
+type Severity = "NONE" | "LOW" | "MEDIUM" | "HIGH";
+
+function severityRank(label: Severity): number {
+  switch (label) {
+    case "NONE": return 0;
+    case "LOW": return 1;
+    case "MEDIUM": return 2;
+    case "HIGH": return 3;
+  }
+}
+
+function classifyStatus(status: number): Severity {
+  if (status === 503) return "HIGH";
+  if (status === 429) return "MEDIUM";
+  if (status === 409) return "LOW";
+  if (status === 400 || status === 404) return "LOW";
+  if (status >= 500) return "HIGH"; // other server errors
+  if (status >= 400) return "LOW"; // other client-ish errors
+  return "NONE"; // 2xx/3xx treated as NONE
+}
+
+app.post("/llm/classify-severity", (req, res) => {
+  const events = (req.body?.events ?? []) as Array<{
+    tenantId?: string;
+    eventId?: string;
+    status: number;
+    reason?: string;
+  }>;
+
+  if (!Array.isArray(events) || events.length === 0) {
+    return res.status(400).json({
+      label: "LOW",
+      rationale: "No events provided (400)."
+    });
+  }
+
+  let winnerLabel: Severity = "NONE";
+  let winnerStatuses: number[] = [];
+
+  for (const e of events) {
+    const label = classifyStatus(e.status);
+
+    const labelIsHigher =
+      severityRank(label) > severityRank(winnerLabel);
+
+    if (labelIsHigher) {
+      winnerLabel = label;
+      winnerStatuses = [e.status];
+    } else if (label === winnerLabel) {
+      winnerStatuses.push(e.status);
+    }
+  }
+
+  // Keep rationale deterministic and evidence-based (references status codes)
+  const uniqueStatuses = Array.from(new Set(winnerStatuses)).sort((a, b) => a - b);
+  const rationale = `Severity=${winnerLabel} based on status code(s): ${uniqueStatuses.join(", ")}.`;
+
+  return res.status(200).json({
+    label: winnerLabel,
+    rationale
+  });
+});
+
 app.get('/health', (_req, res) => {
   res.status(200).json({ ok: true });
 });
