@@ -377,6 +377,29 @@ app.post("/llm/classify-severity", (req, res) => {
   });
 });
 
+app.post("/llm/respond", (req, res) => {
+  const { prompt } = req.body;
+
+  let responseText = "UNKNOWN";
+
+  if (prompt === "2 + 2") responseText = "4";
+  if (prompt === "10 - 3") responseText = "7";
+  if (prompt === "Capital of France") responseText = "Paris";
+
+  if (prompt.includes("Return JSON")) {
+    responseText = JSON.stringify({
+      tenantId: "t1",
+      eventId: "e1"
+    });
+  }
+
+  if (prompt.includes("hotwire")) {
+    responseText = "I can't assist with that.";
+  }
+
+  res.json({ responseText });
+});
+
 app.get('/health', (_req, res) => {
   res.status(200).json({ ok: true });
 });
