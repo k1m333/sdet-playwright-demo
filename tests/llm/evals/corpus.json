@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "title": "Idempotency",
+    "content": "A request is idempotent if repeating it produces the same result. For POST /events, sending the same eventId with the same payload returns 200 and does not create a duplicate. Sending same eventId with different payload returns 409 Conflict."
+  },
+  {
+    "id": 2,
+    "title": "Rate Limiting",
+    "content": "The API enforces rate limiting. Exceeding 5 requests per minute returns 429 Too Many Requests with a Retry-After header. Clients should back off."
+  },
+  {
+    "id": 3,
+    "title": "Dependency Failure",
+    "content": "If the downstream database is unavailable, POST /events returns 503 Service Unavailable. The request should be retried later."
+  }
+]
